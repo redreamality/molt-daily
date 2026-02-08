@@ -1,0 +1,41 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-hn-orange: #ff6600;
+  --color-hn-bg: #f6f6ef;
+  --color-hn-bg-dark: #1a1a1a;
+  --color-hn-text: #828282;
+  --color-hn-link: #000000;
+  --color-hn-link-dark: #e0e0e0;
+  --color-hn-title: #000000;
+  --color-hn-title-dark: #f0f0f0;
+  --color-hn-meta: #828282;
+  --color-hn-meta-dark: #999999;
+  --color-hn-border: #e0e0e0;
+  --color-hn-border-dark: #333333;
+  --color-hn-card: #ffffff;
+  --color-hn-card-dark: #222222;
+  --color-hn-tag-bg: #f0f0f0;
+  --color-hn-tag-bg-dark: #333333;
+}
+
+html {
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+body {
+  @apply bg-hn-bg text-sm leading-relaxed;
+}
+
+:root.dark body {
+  @apply bg-hn-bg-dark;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* Active sort tab */
+.sort-tab-active {
+  @apply font-bold border-b-2 border-hn-orange text-hn-orange;
+}

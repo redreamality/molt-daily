@@ -1,0 +1,51 @@
+---
+---
+
+<nav class="flex gap-4 mb-3 border-b border-hn-border dark:border-hn-border-dark pb-1">
+  <button
+    class="sort-tab sort-tab-active text-xs px-1 pb-1 cursor-pointer bg-transparent border-0 border-b-2 text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange"
+    data-tab="hot"
+  >
+    Hot
+  </button>
+  <button
+    class="sort-tab text-xs px-1 pb-1 cursor-pointer bg-transparent border-0 border-b-2 border-transparent text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange"
+    data-tab="top"
+  >
+    Top
+  </button>
+  <button
+    class="sort-tab text-xs px-1 pb-1 cursor-pointer bg-transparent border-0 border-b-2 border-transparent text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange"
+    data-tab="rising"
+  >
+    Rising
+  </button>
+</nav>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.sort-tab');
+  const lists = {
+    hot: document.getElementById('feed-hot'),
+    top: document.getElementById('feed-top'),
+    rising: document.getElementById('feed-rising'),
+  };
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab as keyof typeof lists;
+
+      // Update tab styles
+      tabs.forEach((t) => {
+        t.classList.remove('sort-tab-active', 'font-bold', 'border-hn-orange', 'text-hn-orange');
+        t.classList.add('border-transparent');
+      });
+      tab.classList.add('sort-tab-active', 'font-bold', 'border-hn-orange', 'text-hn-orange');
+      tab.classList.remove('border-transparent');
+
+      // Show/hide lists
+      Object.entries(lists).forEach(([key, el]) => {
+        if (el) el.classList.toggle('hidden', key !== target);
+      });
+    });
+  });
+</script>

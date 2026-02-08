@@ -1,0 +1,21 @@
+---
+---
+
+<button
+  id="theme-toggle"
+  class="px-2 py-1 text-xs rounded cursor-pointer
+         bg-hn-tag-bg text-hn-meta hover:text-hn-orange
+         dark:bg-hn-tag-bg-dark dark:text-hn-meta-dark dark:hover:text-hn-orange"
+  aria-label="Toggle dark mode"
+>
+  <span class="dark:hidden">dark</span>
+  <span class="hidden dark:inline">light</span>
+</button>
+
+<script>
+  const btn = document.getElementById('theme-toggle')!;
+  btn.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+</script>

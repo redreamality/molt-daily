@@ -1,0 +1,30 @@
+---
+interface Props {
+  currentDate: string;
+  dates: string[];
+}
+
+const { currentDate, dates } = Astro.props;
+const idx = dates.indexOf(currentDate);
+const prevDate = idx < dates.length - 1 ? dates[idx + 1] : null;
+const nextDate = idx > 0 ? dates[idx - 1] : null;
+const isLatest = idx === 0;
+---
+
+<nav class="flex items-center justify-between text-xs text-hn-meta dark:text-hn-meta-dark mb-3">
+  {prevDate ? (
+    <a href={`/archive/${prevDate}`} class="hover:text-hn-orange">&larr; {prevDate}</a>
+  ) : (
+    <span class="opacity-30">&larr; no earlier</span>
+  )}
+
+  <span class="font-bold text-hn-title dark:text-hn-title-dark">{currentDate}</span>
+
+  {isLatest ? (
+    <span class="opacity-30">latest &rarr;</span>
+  ) : nextDate ? (
+    <a href={nextDate === dates[0] ? '/' : `/archive/${nextDate}`} class="hover:text-hn-orange">{nextDate} &rarr;</a>
+  ) : (
+    <span class="opacity-30">latest &rarr;</span>
+  )}
+</nav>

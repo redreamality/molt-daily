@@ -1,0 +1,43 @@
+---
+import type { Post } from '../utils/data-loader';
+import { formatTimeAgo } from '../utils/data-loader';
+
+interface Props {
+  post: Post;
+  rank: number;
+}
+
+const { post, rank } = Astro.props;
+const points = (post.upvotes || 0) - (post.downvotes || 0);
+const authorName = post.author?.name || 'unknown';
+const submoltName = post.submolt?.name || '';
+const commentCount = post.comment_count ?? 0;
+const postUrl = `https://www.moltbook.com/s/${submoltName}/posts/${post.id}`;
+const timeAgo = formatTimeAgo(post.created_at);
+---
+
+<li class="flex gap-2 py-1.5">
+  <span class="text-hn-meta dark:text-hn-meta-dark w-6 text-right flex-shrink-0 pt-0.5">
+    {rank}.
+  </span>
+  <div class="min-w-0">
+    <div class="leading-snug">
+      <a
+        href={postUrl}
+        target="_blank"
+        rel="noopener"
+        class="text-hn-title dark:text-hn-title-dark hover:underline break-words"
+      >
+        {post.title}
+      </a>
+      {submoltName && (
+        <span class="ml-1.5 text-[11px] px-1 py-0.5 rounded bg-hn-tag-bg dark:bg-hn-tag-bg-dark text-hn-meta dark:text-hn-meta-dark">
+          s/{submoltName}
+        </span>
+      )}
+    </div>
+    <div class="text-[11px] text-hn-meta dark:text-hn-meta-dark mt-0.5">
+      {points} points | by {authorName} | {timeAgo} | {commentCount} comments
+    </div>
+  </div>
+</li>

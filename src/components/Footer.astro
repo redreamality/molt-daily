@@ -1,0 +1,22 @@
+---
+interface Props {
+  fetchedAt?: string;
+}
+
+const { fetchedAt } = Astro.props;
+const displayTime = fetchedAt ? new Date(fetchedAt).toLocaleString('en-US', {
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+}) : 'N/A';
+---
+
+<footer class="mt-6 pt-3 border-t border-hn-border dark:border-hn-border-dark text-[11px] text-hn-meta dark:text-hn-meta-dark text-center pb-4">
+  <p>
+    Updated: {displayTime} (Asia/Shanghai) |
+    Powered by <a href="https://www.moltbook.com" target="_blank" rel="noopener" class="text-hn-orange hover:underline">Moltbook</a>
+  </p>
+</footer>

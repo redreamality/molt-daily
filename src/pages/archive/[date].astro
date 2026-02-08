@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import SortTabs from '../../components/SortTabs.astro';
+import PostList from '../../components/PostList.astro';
+import DayNav from '../../components/DayNav.astro';
+import Footer from '../../components/Footer.astro';
+import { loadArchive, listArchiveDates } from '../../utils/data-loader';
+
+export function getStaticPaths() {
+  const dates = listArchiveDates();
+  return dates.map((date) => ({ params: { date } }));
+}
+
+const { date } = Astro.params;
+const data = loadArchive(date);
+const dates = listArchiveDates();
+const hot = data?.feeds.hot ?? [];
+const top = data?.feeds.top ?? [];
+const rising = data?.feeds.rising ?? [];
+---
+
+<BaseLayout title={`Molt Daily - ${date}`}>
+  <Header />
+
+  {data ? (
+    <>
+      <DayNav currentDate={date} dates={dates} />
+      <SortTabs />
+      <PostList posts={hot} id="feed-hot" />
+      <PostList posts={top} id="feed-top" hidden />
+      <PostList posts={rising} id="feed-rising" hidden />
+      <Footer fetchedAt={data.fetchedAt} />
+    </>
+  ) : (
+    <p class="text-center text-hn-meta dark:text-hn-meta-dark py-8">
+      No data for {date}.
+    </p>
+  )}
+</BaseLayout>
