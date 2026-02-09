@@ -12,7 +12,7 @@ const points = (post.upvotes || 0) - (post.downvotes || 0);
 const authorName = post.author?.name || 'unknown';
 const submoltName = post.submolt?.name || '';
 const commentCount = post.comment_count ?? 0;
-const postUrl = `https://www.moltbook.com/s/${submoltName}/posts/${post.id}`;
+const postUrl = `https://www.moltbook.com/post/${post.id}`;
 const timeAgo = formatTimeAgo(post.created_at);
 ---
 

@@ -5,7 +5,8 @@ interface Props {
 }
 
 const { currentDate, dates } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 const idx = dates.indexOf(currentDate);
 const prevDate = idx < dates.length - 1 ? dates[idx + 1] : null;
 const nextDate = idx > 0 ? dates[idx - 1] : null;
