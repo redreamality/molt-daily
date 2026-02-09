@@ -17,6 +17,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "tailwindcss": "^4.0.0"
   },
+  "packageManager": "pnpm@10.15.1",
   "pnpm": {
     "onlyBuiltDependencies": ["esbuild", "sharp"]
   }
