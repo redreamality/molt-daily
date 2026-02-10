@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Fetch hot/top/rising feeds from Moltbook and save to data/ directory.
+ * Fetch hot/top/new feeds from Moltbook and save to data/ directory.
  * Run: MOLTBOOK_API_KEY=xxx node scripts/fetch-data.mjs
  */
 
@@ -60,10 +60,10 @@ async function fetchSubmolts() {
 async function main() {
   console.log('Fetching Moltbook data...');
 
-  const [hot, top, rising, submolts] = await Promise.all([
+  const [hot, top, newPosts, submolts] = await Promise.all([
     fetchFeed('hot'),
     fetchFeed('top'),
-    fetchFeed('rising'),
+    fetchFeed('new'),
     fetchSubmolts(),
   ]);
 
@@ -73,12 +73,12 @@ async function main() {
   const payload = {
     date,
     fetchedAt: now.toISOString(),
-    feeds: { hot, top, rising },
+    feeds: { hot, top, new: newPosts },
     submolts,
     stats: {
       hotCount: hot.length,
       topCount: top.length,
-      risingCount: rising.length,
+      newCount: newPosts.length,
       submoltCount: Array.isArray(submolts) ? submolts.length : 0,
     },
   };
@@ -99,7 +99,7 @@ async function main() {
   console.log(`Written: ${archivePath}`);
 
   console.log(
-    `Done! ${payload.stats.hotCount} hot, ${payload.stats.topCount} top, ${payload.stats.risingCount} rising posts`
+    `Done! ${payload.stats.hotCount} hot, ${payload.stats.topCount} top, ${payload.stats.newCount} new posts`
   );
 }
 

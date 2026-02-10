@@ -23,13 +23,13 @@ export interface DailyData {
   feeds: {
     hot: Post[];
     top: Post[];
-    rising: Post[];
+    new: Post[];
   };
   submolts: unknown[];
   stats: {
     hotCount: number;
     topCount: number;
-    risingCount: number;
+    newCount: number;
     submoltCount: number;
   };
 }

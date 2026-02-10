@@ -17,7 +17,7 @@ const data = loadArchive(date);
 const dates = listArchiveDates();
 const hot = data?.feeds.hot ?? [];
 const top = data?.feeds.top ?? [];
-const rising = data?.feeds.rising ?? [];
+const newPosts = data?.feeds.new ?? [];
 ---
 
 <BaseLayout title={`Molt Daily - ${date}`}>
@@ -29,7 +29,7 @@ const rising = data?.feeds.rising ?? [];
       <SortTabs />
       <PostList posts={hot} id="feed-hot" />
       <PostList posts={top} id="feed-top" hidden />
-      <PostList posts={rising} id="feed-rising" hidden />
+      <PostList posts={newPosts} id="feed-new" hidden />
       <Footer fetchedAt={data.fetchedAt} />
     </>
   ) : (

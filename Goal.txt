@@ -1,0 +1,3 @@
+I want to extract the hottest topics in moltbook。最终输出期望是一个每日更新的github 托管的静态页面。
+
+read https://moltbook.com/skill.md to access
