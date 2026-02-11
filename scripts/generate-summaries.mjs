@@ -16,7 +16,7 @@ const ARCHIVE_DIR = join(DATA_DIR, 'archive');
 
 const AUTH_TOKEN = process.env.ANTHROPIC_AUTH_TOKEN;
 const BASE_URL = (process.env.ANTHROPIC_BASE_URL || 'https://ai.ppbox.top').replace(/\/+$/, '');
-const MODEL = process.env.SUMMARY_MODEL || 'claude-haiku-4-5-20251001';
+const MODEL = process.env.SUMMARY_MODEL || 'claude-3-5-haiku-20241022';
 const BATCH_SIZE = 3;
 const BATCH_DELAY_MS = 1000;
 const MIN_CONTENT_LENGTH = 50;
