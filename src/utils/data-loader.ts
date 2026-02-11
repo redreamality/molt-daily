@@ -7,6 +7,8 @@ const ARCHIVE_DIR = join(DATA_DIR, 'archive');
 export interface Post {
   id: string;
   title: string;
+  title_zh?: string;
+  title_en?: string;
   content?: string;
   summary?: string;
   url?: string;
