@@ -39,3 +39,85 @@ a {
 .sort-tab-active {
   @apply font-bold border-b-2 border-hn-orange text-hn-orange;
 }
+
+/* Article prose styling */
+.prose-molt {
+  @apply text-sm leading-relaxed text-hn-title;
+}
+
+:root.dark .prose-molt {
+  @apply text-hn-title-dark;
+}
+
+.prose-molt h2 {
+  @apply text-base font-bold mt-5 mb-2;
+}
+
+.prose-molt h3 {
+  @apply text-sm font-bold mt-4 mb-1.5;
+}
+
+.prose-molt p {
+  @apply my-2;
+}
+
+.prose-molt ul,
+.prose-molt ol {
+  @apply my-2 pl-5;
+}
+
+.prose-molt ul {
+  list-style-type: disc;
+}
+
+.prose-molt ol {
+  list-style-type: decimal;
+}
+
+.prose-molt li {
+  @apply my-1;
+}
+
+.prose-molt blockquote {
+  @apply border-l-3 border-hn-border pl-3 my-3 text-hn-meta italic;
+}
+
+:root.dark .prose-molt blockquote {
+  @apply border-hn-border-dark text-hn-meta-dark;
+}
+
+.prose-molt code {
+  @apply bg-hn-tag-bg px-1 py-0.5 rounded text-xs;
+}
+
+:root.dark .prose-molt code {
+  @apply bg-hn-tag-bg-dark;
+}
+
+.prose-molt pre {
+  @apply bg-hn-tag-bg rounded p-3 my-3 overflow-x-auto;
+}
+
+:root.dark .prose-molt pre {
+  @apply bg-hn-tag-bg-dark;
+}
+
+.prose-molt pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose-molt a {
+  @apply text-hn-orange hover:underline;
+}
+
+.prose-molt hr {
+  @apply border-hn-border my-4;
+}
+
+:root.dark .prose-molt hr {
+  @apply border-hn-border-dark;
+}
+
+.prose-molt strong {
+  @apply font-bold;
+}

@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import { loadAllUniquePosts, formatTimeAgo } from '../../utils/data-loader';
+import { marked } from 'marked';
+
+export function getStaticPaths() {
+  const allPosts = loadAllUniquePosts();
+  return allPosts.map(({ post, date }) => ({
+    params: { id: post.id },
+    props: { post, date },
+  }));
+}
+
+const { post, date } = Astro.props;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+const points = (post.upvotes || 0) - (post.downvotes || 0);
+const authorName = post.author?.name || 'unknown';
+const submoltName = post.submolt?.name || '';
+const commentCount = post.comment_count ?? 0;
+const timeAgo = formatTimeAgo(post.created_at);
+const moltbookUrl = `https://www.moltbook.com/post/${post.id}`;
+const summaryHtml = post.summary ? marked(post.summary) : null;
+---
+
+<BaseLayout title={`${post.title} - Molt Daily`}>
+  <Header />
+
+  <div class="mt-4 mb-6">
+    <a href={`${base}`} class="text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange text-xs">
+      &larr; Back to list
+    </a>
+  </div>
+
+  <article>
+    <h1 class="text-lg font-bold text-hn-title dark:text-hn-title-dark leading-snug mb-2">
+      {post.title}
+    </h1>
+
+    <div class="text-[11px] text-hn-meta dark:text-hn-meta-dark mb-4 flex flex-wrap gap-x-2">
+      <span>{points} points</span>
+      <span>|</span>
+      <span>by {authorName}</span>
+      <span>|</span>
+      <span>{timeAgo}</span>
+      <span>|</span>
+      <span>{commentCount} comments</span>
+      {submoltName && (
+        <>
+          <span>|</span>
+          <span class="px-1 py-0.5 rounded bg-hn-tag-bg dark:bg-hn-tag-bg-dark">
+            s/{submoltName}
+          </span>
+        </>
+      )}
+    </div>
+
+    <hr class="border-hn-border dark:border-hn-border-dark mb-4" />
+
+    {summaryHtml ? (
+      <div class="prose-molt" set:html={summaryHtml} />
+    ) : (
+      <div class="text-sm text-hn-meta dark:text-hn-meta-dark whitespace-pre-wrap">
+        {post.content || 'No content available.'}
+      </div>
+    )}
+
+    <div class="mt-6 pt-4 border-t border-hn-border dark:border-hn-border-dark">
+      <a
+        href={moltbookUrl}
+        target="_blank"
+        rel="noopener"
+        class="text-sm text-hn-orange hover:underline"
+      >
+        View original on Moltbook &rarr;
+      </a>
+    </div>
+  </article>
+</BaseLayout>

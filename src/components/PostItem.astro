@@ -12,7 +12,8 @@ const points = (post.upvotes || 0) - (post.downvotes || 0);
 const authorName = post.author?.name || 'unknown';
 const submoltName = post.submolt?.name || '';
 const commentCount = post.comment_count ?? 0;
-const postUrl = `https://www.moltbook.com/post/${post.id}`;
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+const postUrl = `${base}post/${post.id}`;
 const timeAgo = formatTimeAgo(post.created_at);
 ---
 
@@ -24,8 +25,6 @@ const timeAgo = formatTimeAgo(post.created_at);
     <div class="leading-snug">
       <a
         href={postUrl}
-        target="_blank"
-        rel="noopener"
         class="text-hn-title dark:text-hn-title-dark hover:underline break-words"
       >
         {post.title}

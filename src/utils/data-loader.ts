@@ -8,6 +8,7 @@ export interface Post {
   id: string;
   title: string;
   content?: string;
+  summary?: string;
   url?: string;
   upvotes: number;
   downvotes: number;
@@ -53,6 +54,34 @@ export function listArchiveDates(): string[] {
     .map((f) => f.replace('.json', ''))
     .sort()
     .reverse();
+}
+
+export function loadAllUniquePosts(): { post: Post; date: string }[] {
+  const seen = new Map<string, { post: Post; date: string }>();
+
+  function addPosts(data: DailyData) {
+    const allPosts = [
+      ...(data.feeds.hot || []),
+      ...(data.feeds.top || []),
+      ...(data.feeds.new || []),
+    ];
+    for (const post of allPosts) {
+      if (!seen.has(post.id)) {
+        seen.set(post.id, { post, date: data.date });
+      }
+    }
+  }
+
+  const latest = loadLatest();
+  if (latest) addPosts(latest);
+
+  const dates = listArchiveDates();
+  for (const date of dates) {
+    const archive = loadArchive(date);
+    if (archive) addPosts(archive);
+  }
+
+  return Array.from(seen.values());
 }
 
 export function formatTimeAgo(dateStr: string): string {
