@@ -16,7 +16,8 @@ const ARCHIVE_DIR = join(DATA_DIR, 'archive');
 
 const AUTH_TOKEN = process.env.ANTHROPIC_AUTH_TOKEN;
 const BASE_URL = (process.env.ANTHROPIC_BASE_URL || 'https://ai.ppbox.top').replace(/\/+$/, '');
-const MODEL = process.env.SUMMARY_MODEL || 'claude-3-5-haiku-20241022';
+const MODEL = process.env.SUMMARY_MODEL || 'claude-haiku-4-5-20251001';
+const API_GROUP = process.env.ANTHROPIC_API_GROUP || 'AWSClaudeCode稳定通道2';
 const BATCH_SIZE = 3;
 const BATCH_DELAY_MS = 1000;
 const MIN_CONTENT_LENGTH = 50;
@@ -98,25 +99,31 @@ function collectPostsNeedingSummary(files) {
 }
 
 async function generateSummary(post) {
-  const url = `${BASE_URL}/v1/messages`;
+  const url = `${BASE_URL}/v1/chat/completions`;
   const body = {
     model: MODEL,
+    group: API_GROUP,
     max_tokens: 1024,
-    system: SYSTEM_PROMPT,
     messages: [
+      {
+        role: 'system',
+        content: SYSTEM_PROMPT,
+      },
       {
         role: 'user',
         content: `Please summarize the following post:\n\nTitle: ${post.title}\n\nContent:\n${post.content}`,
       },
     ],
+    stream: false,
+    temperature: 0.7,
+    top_p: 1,
   };
 
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': AUTH_TOKEN,
-      'anthropic-version': '2023-06-01',
+      'Authorization': `Bearer ${AUTH_TOKEN}`,
     },
     body: JSON.stringify(body),
   });
@@ -127,7 +134,7 @@ async function generateSummary(post) {
   }
 
   const result = await res.json();
-  const content = result.content?.[0]?.text;
+  const content = result.choices?.[0]?.message?.content;
   if (!content) throw new Error('Empty response from API');
   return content;
 }
