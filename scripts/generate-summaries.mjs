@@ -17,7 +17,6 @@ const ARCHIVE_DIR = join(DATA_DIR, 'archive');
 const AUTH_TOKEN = process.env.ANTHROPIC_AUTH_TOKEN;
 const BASE_URL = (process.env.ANTHROPIC_BASE_URL || 'https://ai.ppbox.top').replace(/\/+$/, '');
 const MODEL = process.env.SUMMARY_MODEL || 'claude-haiku-4-5-20251001';
-const API_GROUP = process.env.ANTHROPIC_API_GROUP || 'AWSClaudeCode稳定通道2';
 const BATCH_SIZE = 3;
 const BATCH_DELAY_MS = 1000;
 const MIN_CONTENT_LENGTH = 50;
@@ -102,7 +101,6 @@ async function generateSummary(post) {
   const url = `${BASE_URL}/v1/chat/completions`;
   const body = {
     model: MODEL,
-    group: API_GROUP,
     max_tokens: 1024,
     messages: [
       {
