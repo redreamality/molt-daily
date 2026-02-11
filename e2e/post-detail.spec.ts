@@ -47,6 +47,69 @@ test.describe('Post detail page', () => {
     const hasSummary = await page.locator('.prose-molt').count();
     const hasFallback = await page.locator('.whitespace-pre-wrap').count();
     expect(hasSummary + hasFallback).toBeGreaterThan(0);
+
+    // If there is a summary with tabs, verify the language toggle tabs are present
+    const hasLangTabs = await page.locator('.lang-tab').count();
+    if (hasSummary > 0 && hasLangTabs > 0) {
+      await expect(page.locator('.lang-tab[data-lang="zh"]')).toBeVisible();
+      await expect(page.locator('.lang-tab[data-lang="en"]')).toBeVisible();
+      await expect(page.locator('.lang-tab[data-lang="zh"]')).toHaveText('中文');
+      await expect(page.locator('.lang-tab[data-lang="en"]')).toHaveText('English');
+    }
+  });
+
+  test('language tabs switch content', async ({ page }) => {
+    await page.goto(`${BASE}/`);
+
+    // Collect hrefs from visible post links before navigating away
+    const postLinks = page.locator('ol:not(.hidden) li a');
+    const count = Math.min(await postLinks.count(), 10);
+    const hrefs: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const href = await postLinks.nth(i).getAttribute('href');
+      if (href) hrefs.push(href);
+    }
+    let found = false;
+
+    for (const href of hrefs) {
+      await page.goto(href);
+      await expect(page).toHaveURL(/\/post\//);
+
+      const hasLangTabs = await page.locator('.lang-tab').count();
+      if (hasLangTabs > 0) {
+        found = true;
+
+        // Chinese tab should be active by default, Chinese summary visible, English hidden
+        const zhPanel = page.locator('#summary-zh');
+        const enPanel = page.locator('#summary-en');
+        await expect(zhPanel).toBeVisible();
+        await expect(enPanel).toBeHidden();
+
+        // Capture Chinese summary text
+        const zhText = await zhPanel.textContent();
+
+        // Click English tab
+        await page.locator('.lang-tab[data-lang="en"]').click();
+
+        // Now English should be visible and Chinese hidden
+        await expect(enPanel).toBeVisible();
+        await expect(zhPanel).toBeHidden();
+
+        // English content should differ from Chinese content
+        const enText = await enPanel.textContent();
+        expect(enText).not.toBe(zhText);
+
+        // Click Chinese tab again to verify it switches back
+        await page.locator('.lang-tab[data-lang="zh"]').click();
+        await expect(zhPanel).toBeVisible();
+        await expect(enPanel).toBeHidden();
+
+        break;
+      }
+    }
+
+    // Skip if no posts have summaries yet (e.g. before first generation)
+    test.skip(!found, 'No posts with bilingual summaries found');
   });
 
   test('post links do not open in new tab', async ({ page }) => {

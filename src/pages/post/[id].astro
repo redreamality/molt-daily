@@ -20,7 +20,21 @@ const submoltName = post.submolt?.name || '';
 const commentCount = post.comment_count ?? 0;
 const timeAgo = formatTimeAgo(post.created_at);
 const moltbookUrl = `https://www.moltbook.com/post/${post.id}`;
-const summaryHtml = post.summary ? marked(post.summary) : null;
+// Split summary into Chinese and English parts on the `---` separator
+let zhSummaryHtml: string | null = null;
+let enSummaryHtml: string | null = null;
+let hasTabs = false;
+
+if (post.summary) {
+  const parts = post.summary.split(/\n---\n/);
+  if (parts.length >= 2) {
+    zhSummaryHtml = await marked(parts[0].trim());
+    enSummaryHtml = await marked(parts.slice(1).join('\n---\n').trim());
+    hasTabs = true;
+  } else {
+    zhSummaryHtml = await marked(post.summary);
+  }
+}
 ---
 
 <BaseLayout title={`${post.title} - Molt Daily`}>
@@ -57,13 +71,63 @@ const summaryHtml = post.summary ? marked(post.summary) : null;
 
     <hr class="border-hn-border dark:border-hn-border-dark mb-4" />
 
-    {summaryHtml ? (
-      <div class="prose-molt" set:html={summaryHtml} />
+    {zhSummaryHtml ? (
+      hasTabs ? (
+        <div>
+          <nav class="flex gap-4 mb-3 border-b border-hn-border dark:border-hn-border-dark pb-1">
+            <button
+              class="lang-tab sort-tab-active text-xs px-1 pb-1 cursor-pointer bg-transparent border-0 border-b-2 text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange"
+              data-lang="zh"
+            >
+              中文
+            </button>
+            <button
+              class="lang-tab text-xs px-1 pb-1 cursor-pointer bg-transparent border-0 border-b-2 border-transparent text-hn-meta dark:text-hn-meta-dark hover:text-hn-orange"
+              data-lang="en"
+            >
+              English
+            </button>
+          </nav>
+          <div id="summary-zh" class="prose-molt" set:html={zhSummaryHtml} />
+          <div id="summary-en" class="prose-molt hidden" set:html={enSummaryHtml} />
+        </div>
+      ) : (
+        <div class="prose-molt" set:html={zhSummaryHtml} />
+      )
     ) : (
       <div class="text-sm text-hn-meta dark:text-hn-meta-dark whitespace-pre-wrap">
         {post.content || 'No content available.'}
       </div>
     )}
+
+    <script>
+      const langTabs = document.querySelectorAll<HTMLButtonElement>('.lang-tab');
+      if (langTabs.length > 0) {
+        const summaries: Record<string, HTMLElement | null> = {
+          zh: document.getElementById('summary-zh'),
+          en: document.getElementById('summary-en'),
+        };
+
+        langTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const target = tab.dataset.lang as string;
+
+            // Update tab styles
+            langTabs.forEach((t) => {
+              t.classList.remove('sort-tab-active', 'font-bold', 'border-hn-orange', 'text-hn-orange');
+              t.classList.add('border-transparent');
+            });
+            tab.classList.add('sort-tab-active', 'font-bold', 'border-hn-orange', 'text-hn-orange');
+            tab.classList.remove('border-transparent');
+
+            // Show/hide summaries
+            Object.entries(summaries).forEach(([key, el]) => {
+              if (el) el.classList.toggle('hidden', key !== target);
+            });
+          });
+        });
+      }
+    </script>
 
     <div class="mt-6 pt-4 border-t border-hn-border dark:border-hn-border-dark">
       <a
