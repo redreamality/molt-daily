@@ -28,7 +28,7 @@ body {
 }
 
 :root.dark body {
-  @apply bg-hn-bg-dark;
+  @apply bg-hn-bg-dark text-hn-title-dark;
 }
 
 a {
@@ -91,7 +91,7 @@ a {
 }
 
 :root.dark .prose-molt code {
-  @apply bg-hn-tag-bg-dark;
+  @apply bg-hn-tag-bg-dark text-hn-title-dark;
 }
 
 .prose-molt pre {
@@ -99,11 +99,15 @@ a {
 }
 
 :root.dark .prose-molt pre {
-  @apply bg-hn-tag-bg-dark;
+  @apply bg-hn-tag-bg-dark text-hn-title-dark;
 }
 
 .prose-molt pre code {
   @apply bg-transparent p-0;
+}
+
+:root.dark .prose-molt pre code {
+  @apply bg-transparent text-hn-title-dark;
 }
 
 .prose-molt a {
@@ -120,4 +124,8 @@ a {
 
 .prose-molt strong {
   @apply font-bold;
+}
+
+:root.dark .prose-molt strong {
+  @apply text-hn-title-dark;
 }

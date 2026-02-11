@@ -1,7 +1,7 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import { loadAllUniquePosts, formatTimeAgo } from '../../utils/data-loader';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import { loadAllUniquePosts, formatTimeAgo } from '../../../utils/data-loader';
 import { marked } from 'marked';
 
 export function getStaticPaths() {
@@ -21,11 +21,16 @@ const commentCount = post.comment_count ?? 0;
 const timeAgo = formatTimeAgo(post.created_at);
 const moltbookUrl = `https://www.moltbook.com/post/${post.id}`;
 // Split summary into Chinese and English parts on the `---` separator
-let zhSummaryHtml: string | null = null;
+let enSummaryHtml: string | null = null;
 
 if (post.summary) {
   const parts = post.summary.split(/\n---\n/);
-  zhSummaryHtml = await marked(parts[0].trim());
+  if (parts.length >= 2) {
+    enSummaryHtml = await marked(parts.slice(1).join('\n---\n').trim());
+  } else {
+    // No English part available, fall back to the full summary
+    enSummaryHtml = await marked(post.summary);
+  }
 }
 ---
 
@@ -63,8 +68,8 @@ if (post.summary) {
 
     <hr class="border-hn-border dark:border-hn-border-dark mb-4" />
 
-    {zhSummaryHtml ? (
-      <div class="prose-molt" set:html={zhSummaryHtml} />
+    {enSummaryHtml ? (
+      <div class="prose-molt" set:html={enSummaryHtml} />
     ) : (
       <div class="text-sm text-hn-meta dark:text-hn-meta-dark whitespace-pre-wrap">
         {post.content || 'No content available.'}

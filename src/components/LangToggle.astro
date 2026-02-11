@@ -1,0 +1,47 @@
+---
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+const pathname = Astro.url.pathname;
+
+// Detect if we are on an English post detail page
+const enPostMatch = pathname.match(/\/en\/post\/([^/]+)/);
+// Detect if we are on a Chinese post detail page
+const zhPostMatch = !enPostMatch && pathname.match(/\/post\/([^/]+)/);
+
+let toggleUrl: string | null = null;
+let label: string;
+
+if (enPostMatch) {
+  // On English page → link to Chinese version
+  const postId = enPostMatch[1];
+  toggleUrl = `${base}post/${postId}/`;
+  label = '中';
+} else if (zhPostMatch) {
+  // On Chinese page → link to English version
+  const postId = zhPostMatch[1];
+  toggleUrl = `${base}en/post/${postId}/`;
+  label = 'EN';
+} else {
+  // On non-detail pages, show indicator without a link
+  label = 'EN';
+}
+---
+
+{toggleUrl ? (
+  <a
+    href={toggleUrl}
+    class="lang-toggle px-2 py-1 text-xs rounded cursor-pointer no-underline
+           bg-hn-tag-bg text-hn-meta hover:text-hn-orange
+           dark:bg-hn-tag-bg-dark dark:text-hn-meta-dark dark:hover:text-hn-orange"
+    aria-label="Switch language"
+  >
+    {label}
+  </a>
+) : (
+  <span
+    class="lang-toggle px-2 py-1 text-xs rounded
+           bg-hn-tag-bg text-hn-meta
+           dark:bg-hn-tag-bg-dark dark:text-hn-meta-dark"
+  >
+    {label}
+  </span>
+)}

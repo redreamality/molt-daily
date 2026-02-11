@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import LangToggle from './LangToggle.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -8,5 +9,8 @@ const base = import.meta.env.BASE_URL;
     <span class="text-lg">🦞</span>
     <h1 class="text-base font-bold text-hn-orange m-0">Molt Daily</h1>
   </a>
-  <ThemeToggle />
+  <div class="flex items-center gap-2">
+    <LangToggle />
+    <ThemeToggle />
+  </div>
 </header>

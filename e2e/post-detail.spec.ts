@@ -47,18 +47,9 @@ test.describe('Post detail page', () => {
     const hasSummary = await page.locator('.prose-molt').count();
     const hasFallback = await page.locator('.whitespace-pre-wrap').count();
     expect(hasSummary + hasFallback).toBeGreaterThan(0);
-
-    // If there is a summary with tabs, verify the language toggle tabs are present
-    const hasLangTabs = await page.locator('.lang-tab').count();
-    if (hasSummary > 0 && hasLangTabs > 0) {
-      await expect(page.locator('.lang-tab[data-lang="zh"]')).toBeVisible();
-      await expect(page.locator('.lang-tab[data-lang="en"]')).toBeVisible();
-      await expect(page.locator('.lang-tab[data-lang="zh"]')).toHaveText('中文');
-      await expect(page.locator('.lang-tab[data-lang="en"]')).toHaveText('English');
-    }
   });
 
-  test('language tabs switch content', async ({ page }) => {
+  test('language toggle navigates between Chinese and English versions', async ({ page }) => {
     await page.goto(`${BASE}/`);
 
     // Collect hrefs from visible post links before navigating away
@@ -75,41 +66,35 @@ test.describe('Post detail page', () => {
       await page.goto(href);
       await expect(page).toHaveURL(/\/post\//);
 
-      const hasLangTabs = await page.locator('.lang-tab').count();
-      if (hasLangTabs > 0) {
+      // Check if a language toggle link (not just a span) exists
+      const langToggleLink = page.locator('a.lang-toggle');
+      const hasToggle = await langToggleLink.count();
+      if (hasToggle > 0) {
         found = true;
 
-        // Chinese tab should be active by default, Chinese summary visible, English hidden
-        const zhPanel = page.locator('#summary-zh');
-        const enPanel = page.locator('#summary-en');
-        await expect(zhPanel).toBeVisible();
-        await expect(enPanel).toBeHidden();
+        // On the Chinese page, the toggle should show "EN"
+        await expect(langToggleLink).toHaveText('EN');
 
-        // Capture Chinese summary text
-        const zhText = await zhPanel.textContent();
+        // Click to go to the English version
+        await langToggleLink.click();
+        await expect(page).toHaveURL(/\/en\/post\//);
 
-        // Click English tab
-        await page.locator('.lang-tab[data-lang="en"]').click();
+        // On the English page, the toggle should show the Chinese indicator
+        const langToggleLinkEn = page.locator('a.lang-toggle');
+        await expect(langToggleLinkEn).toHaveText('中');
 
-        // Now English should be visible and Chinese hidden
-        await expect(enPanel).toBeVisible();
-        await expect(zhPanel).toBeHidden();
-
-        // English content should differ from Chinese content
-        const enText = await enPanel.textContent();
-        expect(enText).not.toBe(zhText);
-
-        // Click Chinese tab again to verify it switches back
-        await page.locator('.lang-tab[data-lang="zh"]').click();
-        await expect(zhPanel).toBeVisible();
-        await expect(enPanel).toBeHidden();
+        // Click back to Chinese version
+        await langToggleLinkEn.click();
+        await expect(page).toHaveURL(/\/post\/[a-f0-9-]+/);
+        // Make sure it is NOT on the /en/ path
+        expect(page.url()).not.toMatch(/\/en\/post\//);
 
         break;
       }
     }
 
     // Skip if no posts have summaries yet (e.g. before first generation)
-    test.skip(!found, 'No posts with bilingual summaries found');
+    test.skip(!found, 'No posts with language toggle found');
   });
 
   test('post links do not open in new tab', async ({ page }) => {
