@@ -29,7 +29,7 @@ if (post.summary) {
 }
 ---
 
-<BaseLayout title={`${post.title} - Molt Daily`}>
+<BaseLayout title={`${post.title_zh || post.title} - Molt Daily`}>
   <Header />
 
   <div class="mt-4 mb-6">
@@ -40,7 +40,7 @@ if (post.summary) {
 
   <article>
     <h1 class="text-lg font-bold text-hn-title dark:text-hn-title-dark leading-snug mb-2">
-      {post.title}
+      {post.title_zh || post.title}
     </h1>
 
     <div class="text-[11px] text-hn-meta dark:text-hn-meta-dark mb-4 flex flex-wrap gap-x-2">

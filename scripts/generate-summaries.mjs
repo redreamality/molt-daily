@@ -29,9 +29,13 @@ if (!AUTH_TOKEN) {
 const SYSTEM_PROMPT = `You are a content editor for a tech news aggregator. Your job is to write reader-friendly summaries of posts.
 
 Output format:
-1. First write a Chinese summary (中文摘要)
-2. Then a separator line: ---
-3. Then an English summary
+1. First write a Chinese title (one line, concise and engaging)
+2. Then a separator: ---
+3. Then a Chinese summary (中文摘要, 150-400 words)
+4. Then a separator line: ---
+5. Then an English title (one line, concise and engaging)
+6. Then a separator: ---
+7. Then an English summary
 
 Each summary should be 150-400 words, written in Markdown format.
 Preserve the core arguments, technical details, and key insights from the original post.
@@ -137,7 +141,29 @@ async function generateSummary(post) {
   return content;
 }
 
-function writeSummaryToFiles(postId, summary, files) {
+function parseBilingualContent(content) {
+  const parts = content.split(/\n---\n/);
+  if (parts.length >= 4) {
+    return {
+      titleZh: parts[0].trim(),
+      summaryZh: parts[1].trim(),
+      titleEn: parts[2].trim(),
+      summaryEn: parts.slice(3).join('\n---\n').trim(),
+    };
+  }
+  // Fallback for old format (just summaries without titles)
+  if (parts.length >= 2) {
+    return {
+      summaryZh: parts[0].trim(),
+      summaryEn: parts.slice(1).join('\n---\n').trim(),
+    };
+  }
+  return { summaryEn: content };
+}
+
+function writeSummaryToFiles(postId, content, files) {
+  const { titleZh, summaryZh, titleEn, summaryEn } = parseBilingualContent(content);
+
   for (const file of files) {
     const data = loadJsonFile(file);
     if (!data?.feeds) continue;
@@ -148,7 +174,15 @@ function writeSummaryToFiles(postId, summary, files) {
       if (!posts) continue;
       for (const post of posts) {
         if (post.id === postId) {
-          post.summary = summary;
+          // Store bilingual titles if available
+          if (titleZh) post.title_zh = titleZh;
+          if (titleEn) post.title_en = titleEn;
+          // Combine summaries with separator
+          if (summaryZh && summaryEn) {
+            post.summary = `${summaryZh}\n---\n${summaryEn}`;
+          } else {
+            post.summary = content;
+          }
           changed = true;
         }
       }
